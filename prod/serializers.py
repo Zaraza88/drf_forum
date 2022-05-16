@@ -10,7 +10,7 @@ class CommentCreateSerializers(MixinCommentSerealizers, serializers.ModelSeriali
 
     class Meta:
         model = Comment
-        fields = '__all__'
+        exclude = ['parent', 'date']  # не забыть поменять как перепишешь тест
 
 
 class CommentViewSerealizers(MixinCommentSerealizers, serializers.ModelSerializer):
@@ -28,7 +28,8 @@ class PostSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        exclude = ['slug', 'date_of_creation', 'is_published']
+        exclude = ['slug', 'date_of_creation',
+                   'is_published', 'publication_date']
 
 
 class PostDetailSerializers(serializers.ModelSerializer):

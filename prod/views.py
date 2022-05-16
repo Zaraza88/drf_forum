@@ -1,8 +1,12 @@
+from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import generics, permissions
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework import viewsets
 
+from .permissions import IsAuthorOrReadOnloR
 from .models import Post, Comment, Category
 from .serializers import (
     PostSerializers,
@@ -12,31 +16,35 @@ from .serializers import (
 )
 
 
+def auth(request):
+    return render(request, 'prod/github.html')
+
+
 class PostListView(generics.ListCreateAPIView):
     """Вывод всех новостей"""
 
-    # filter_backends = (DjangoFilterBackend,)
-
-    queryset = Post.objects.all()
+    queryset = Post.objects.filter(is_published=True)
     serializer_class = PostSerializers
-    permission_classes = [permissions.IsAuthenticated]
+
+    permission_classes = [IsAuthorOrReadOnloR]
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_fields = ['author', 'category']
+    search_fields = ['title']
+    lookup_field = 'slug'
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
-    # @action(methods=['get'], detail=True)
-    # def category(self, request, pk):
-    #     category = News.objects.get(pk=pk)
-    #     return  Response({'category': category.title})
-
-
-class PostDetailView(generics.RetrieveAPIView):
+class PostDetailView(generics.RetrieveAPIView, 
+                     generics.DestroyAPIView, 
+                     generics.UpdateAPIView):
     """Вывод конкретной новости"""
 
     queryset = Post.objects.filter(is_published=True)
     serializer_class = PostDetailSerializers
     lookup_field = 'slug'
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class CreateComment(generics.ListCreateAPIView):

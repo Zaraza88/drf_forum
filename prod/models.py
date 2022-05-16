@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from slugify import slugify
 
 
 class Category(models.Model):
@@ -13,6 +14,10 @@ class Category(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+    def save(self,  *args, **kwargs):
+        self.slug = slugify(self.title)
+        return super(Category, self).save(*args, **kwargs)
 
 
 class Post(models.Model):
@@ -37,6 +42,10 @@ class Post(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+    def save(self,  *args, **kwargs):
+        self.slug = slugify(self.title)
+        return super(Post, self).save(*args, **kwargs)
 
 
 class Comment(models.Model):

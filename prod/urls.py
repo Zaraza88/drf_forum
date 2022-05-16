@@ -4,12 +4,16 @@ from rest_framework import routers
 from . import views
 
 
+# router = routers.SimpleRouter()
+# router.register(r'post', views.PostViewSet)
+
 urlpatterns = [
-    path('post/', views.PostListView.as_view(), name='post-list'),
-    path('post/<slug:slug>/', views.PostDetailView.as_view(), name='post-detail'),
+    # path('', include(router.urls)),
+
+    path('post/', views.PostListView.as_view(), name='post_list'),
+    path('post/<slug:slug>/', views.PostDetailView.as_view(), name='post_detail'),
 
     path('comment/', views.CreateComment.as_view(), name='comment'),
-
     path('categories/', views.CategoriesView.as_view(), name='categories'),
     # path('categories/<slug:slug>/', views.CategoryDetail.as_view(), name='category_detail')
 ]
