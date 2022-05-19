@@ -6,7 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import viewsets
 
-from .permissions import IsAuthorOrReadOnloR
+from .permissions import PotomPridumayuNazvanie
 from .models import Post, Comment, Category
 from .serializers import (
     PostSerializers,
@@ -26,7 +26,7 @@ class PostListView(generics.ListCreateAPIView):
     queryset = Post.objects.filter(is_published=True)
     serializer_class = PostSerializers
 
-    permission_classes = [IsAuthorOrReadOnloR]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ['author', 'category']
     search_fields = ['title']
@@ -43,8 +43,8 @@ class PostDetailView(generics.RetrieveAPIView,
 
     queryset = Post.objects.filter(is_published=True)
     serializer_class = PostDetailSerializers
-    lookup_field = 'slug'
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    lookup_field = 'slug' 
+    permission_classes = [PotomPridumayuNazvanie]
 
 
 class CreateComment(generics.ListCreateAPIView):
