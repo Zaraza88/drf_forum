@@ -1,23 +1,24 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
 from rest_framework import generics, permissions
-from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework import viewsets
+from rest_framework.mixins import UpdateModelMixin
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.response import Response
 
 from .permissions import PotomPridumayuNazvanie
-from .models import Post, Comment, Category
+from .models import Post, Comment, Category, Rating
 from .serializers import (
     PostSerializers,
     PostDetailSerializers,
     CommentCreateSerializers,
     CategoriesSerializers,
+    RatingSerializers,
 )
+from .service import PaginationPosts
 
 
-def auth(request):
-    return render(request, 'prod/github.html')
+# def auth(request):
+#     return render(request, 'prod/github.html')
 
 
 class PostListView(generics.ListCreateAPIView):
@@ -25,6 +26,7 @@ class PostListView(generics.ListCreateAPIView):
 
     queryset = Post.objects.filter(is_published=True)
     serializer_class = PostSerializers
+    pagination_class = PaginationPosts
 
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
@@ -64,6 +66,24 @@ class CategoriesView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializers
     permission_classes = [permissions.IsAuthenticated]
+
+
+class RatingView(generics.ListCreateAPIView):
+    """Вывод рейтинга"""
+    
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializers
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def post(self, request):
+        serializers = RatingSerializers(data=request.data)
+        if serializers.is_valid():
+            serializers.save(user=self.request.user)
+            return Response(status=201)
+        else:
+            return Response(status=400)    
 
 
 # class CategoryDetail(generics.RetrieveAPIView):

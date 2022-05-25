@@ -15,6 +15,8 @@ urlpatterns = [
 
     path('comment/', views.CreateComment.as_view(), name='comment'),
     path('categories/', views.CategoriesView.as_view(), name='categories'),
+
+    path('rating/', views.RatingView.as_view())
     # path('categories/<slug:slug>/', views.CategoryDetail.as_view(), name='category_detail')
 ]
 

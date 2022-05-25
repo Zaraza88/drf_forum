@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Post, Comment
+from .models import Category, Post, Comment, Rating
 
 
 @admin.register(Category)
@@ -27,3 +27,9 @@ class PostAdmin(admin.ModelAdmin):
 class CommentsAdmin(admin.ModelAdmin):
     list_display = ['email', 'name', 'date', 'post']
     list_per_page = 10
+
+
+@admin.register(Rating)
+class RatingAdmin(admin.ModelAdmin):
+    list_display = ('user', 'post_id', 'rating')
+    list_filter = ('rating',)
