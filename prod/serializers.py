@@ -63,6 +63,8 @@ class PostSerializers(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(slug_field='username', read_only=True)
     # rating_count = serializers.SerializerMethodField()
+    user_rating = serializers.BooleanField()
+    middle_rating = serializers.IntegerField()
 
     class Meta:
         model = Post

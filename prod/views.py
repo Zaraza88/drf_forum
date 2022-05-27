@@ -4,6 +4,8 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
+from django.db import models
+from django.db.models import Q
 
 from .permissions import PotomPridumayuNazvanie
 from .models import Post, Comment, Category, Rating
@@ -24,7 +26,7 @@ from .service import PaginationPosts
 class PostListView(generics.ListCreateAPIView):
     """Вывод всех новостей"""
 
-    queryset = Post.objects.filter(is_published=True)
+    # queryset = Post.objects.filter(is_published=True)
     serializer_class = PostSerializers
     pagination_class = PaginationPosts
 
@@ -36,6 +38,15 @@ class PostListView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def get_queryset(self):
+        posts = Post.objects.filter(is_published=True
+        ).annotate(
+            user_rating=models.Count('post_id', filter=models.Q(post_id__user=self.request.user))
+        ).annotate(
+            middle_rating=(models.Avg('post_id__rating'))
+        )
+        return posts
 
 
 class PostDetailView(generics.RetrieveAPIView, 
@@ -80,7 +91,7 @@ class RatingView(generics.ListCreateAPIView):
     def post(self, request):
         serializers = RatingSerializers(data=request.data)
         if serializers.is_valid():
-            serializers.save(user=self.request.user)
+            self.perform_create(serializers)
             return Response(status=201)
         else:
             return Response(status=400)    
