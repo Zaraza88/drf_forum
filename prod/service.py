@@ -15,7 +15,7 @@ class PaginationPosts(PageNumberPagination):
                 'next': self.get_next_link(),
                 'previous': self.get_previous_link()
                 },
-            'result': data
+            'result': data,      
         })
 
 

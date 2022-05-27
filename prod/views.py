@@ -1,11 +1,8 @@
 from rest_framework import generics, permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.mixins import UpdateModelMixin
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from django.db import models
-from django.db.models import Q
 
 from .permissions import PotomPridumayuNazvanie
 from .models import Post, Comment, Category, Rating
@@ -26,15 +23,13 @@ from .service import PaginationPosts
 class PostListView(generics.ListCreateAPIView):
     """Вывод всех новостей"""
 
-    # queryset = Post.objects.filter(is_published=True)
     serializer_class = PostSerializers
-    pagination_class = PaginationPosts
-
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ['author', 'category']
     search_fields = ['title']
     lookup_field = 'slug'
+    # pagination_class = PaginationPosts
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -52,7 +47,7 @@ class PostListView(generics.ListCreateAPIView):
 class PostDetailView(generics.RetrieveAPIView, 
                      generics.DestroyAPIView, 
                      generics.UpdateAPIView):
-    """Вывод конкретной новости"""
+    """Вывод конкретного поста"""
 
     queryset = Post.objects.filter(is_published=True)
     serializer_class = PostDetailSerializers
@@ -94,18 +89,4 @@ class RatingView(generics.ListCreateAPIView):
             self.perform_create(serializers)
             return Response(status=201)
         else:
-            return Response(status=400)    
-
-
-# class CategoryDetail(generics.RetrieveAPIView):
-#     """Вывод постов конкретной категории"""
-
-#     serializer_class = CetigoryDetailSerializers
-#     lookup_field = 'slug'
-#     queryset = Category
-
-    # def get_queryset(self):
-    #     slug = self.kwargs.get('pk')
-
-    #     return Post.objects.filter(category=slug)
-    
+            return Response(status=400)

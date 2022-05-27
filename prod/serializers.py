@@ -62,7 +62,6 @@ class PostSerializers(serializers.ModelSerializer):
     """Вывод всех постов"""
 
     author = serializers.SlugRelatedField(slug_field='username', read_only=True)
-    # rating_count = serializers.SerializerMethodField()
     user_rating = serializers.BooleanField()
     middle_rating = serializers.IntegerField()
 
@@ -70,7 +69,6 @@ class PostSerializers(serializers.ModelSerializer):
         model = Post
         exclude = ['slug', 'date_of_creation',
                    'is_published', 'publication_date']
-
 
 
 class PostDetailSerializers(serializers.ModelSerializer):
@@ -94,13 +92,3 @@ class CategoriesSerializers(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['title']
-
-# class CetigoryDetailSerializers(serializers.ModelSerializer):
-#     """Вывод постов конкретной категории"""
-
-#     category = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-
-#     class Meta:
-#         model = Post
-#         fields = '__all__'
-#         lookup_field = 'slug'
